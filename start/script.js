@@ -1,4 +1,4 @@
-var scene, camera, renderer, controls;
+var scene, camera, renderer, controls, tube;
 
 init();
 
@@ -20,7 +20,15 @@ function init(){
   document.body.appendChild( renderer.domElement );
   
   controls = new THREE.OrbitControls(camera, renderer.domElement);
-    
+  
+  createTube('GrannyKnot')
+  const gui = new dat.GUI();
+  const options = {
+    type: 'GrannyKnot'
+  };
+  
+  gui.add(options, 'type', Object.keys(THREE.Curves)).onChange(value => createTube(value)
+  );
   window.addEventListener( 'resize', resize, false);
   
   update();
@@ -29,6 +37,15 @@ function init(){
 function update(){
   requestAnimationFrame( update );
 	renderer.render( scene, camera );  
+}
+
+function createTube(type){
+  if (tube!==undefined) scene.remove(tube);
+  const curve = new THREE.Curves[type]();
+  const geometry = new THREE.TubeBufferGeometry( curve, 200, 3, 8, true );
+  const material = new THREE.MeshStandardMaterial({ wireframe:false, color: 0xffffff });
+  tube = new THREE.Mesh( geometry, material );
+  scene.add(tube);
 }
 
 function resize(){
